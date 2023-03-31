@@ -134,7 +134,7 @@ app.delete("/players/:id", (req, res) => {
     connection.release();
   });
 });
-//#endregion basketball
+//#endregion basketball/players
 
 function mySanitizeHtml(data) {
   return sanitizeHtml(data, {
