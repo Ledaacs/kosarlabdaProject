@@ -1,0 +1,30 @@
+### get all players
+get http://localhost:3000/players
+
+### get players by id
+get http://localhost:3000/players/6
+
+### delete players by id
+DELETE http://localhost:3000/players/26
+
+### post players
+post http://localhost:3000/players
+Content-Type: application/json
+
+{
+    "id": 26,
+    "name": "Magyar Ferenc",
+    "positionId": 2,
+    "teamId": 1
+}
+
+### put a players
+put http://localhost:3000/players/26
+Content-Type: application/json
+
+{
+    "id": 26,
+    "name": "Magyar Ferenc",
+    "positionId": 2,
+    "teamId": 1
+}
