@@ -23,8 +23,37 @@ put http://localhost:3000/players/26
 Content-Type: application/json
 
 {
-    "id": 26,
     "name": "Magyar Ferenc",
     "positionId": 2,
     "teamId": 1
+}
+
+
+
+
+
+### get all teams
+get http://localhost:3000/teams
+
+### get team by id
+get http://localhost:3000/teams/5
+
+### delete team by id
+DELETE http://localhost:3000/teams/6
+
+### post team
+post http://localhost:3000/teams
+Content-Type: application/json
+
+{
+    "id": 6,
+    "teamName": "MagyarTrollFoci"
+}
+
+### put a team
+put http://localhost:3000/teams/6
+Content-Type: application/json
+
+{
+    "teamName": "MagyarTrollFoci2"
 }
