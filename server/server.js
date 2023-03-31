@@ -20,14 +20,17 @@ const {
 app.use(express.json());
 //#endregion middlewares
 
-//#region basketball/players
+//#region players
 app.get("/players", (req, res) => {
   pool.getConnection(function (error, connection) {
     if (error) {
       sendingInfo(res, 0, "server error", [], 403)
       return;
     }
-    const sql = "SELECT * FROM players";
+    const sql = `
+    SELECT * FROM players p
+    INNER JOIN teams t on p.teamId = t.id;
+    `;
     connection.query(sql, (error, results, fields) => {
       sendingGet(res, error, results);
     });
@@ -43,7 +46,8 @@ app.get("/players/:id", (req, res) => {
       return;
     }
     const sql = `
-    SELECT * FROM players
+    SELECT * FROM players p
+    INNER JOIN teams t on p.teamId = t.id
     WHERE id = ?
   `;
     connection.query(sql, [id], (error, results, fields) => {
@@ -99,7 +103,6 @@ app.put("/players/:id", (req, res) => {
 
     const sql = `
     UPDATE players SET
-    id = ?, 
     name = ?, 
     positionId = ?, 
     teamId = ?
@@ -107,7 +110,7 @@ app.put("/players/:id", (req, res) => {
   `;
     connection.query(
       sql,
-      [newR.id, newR.name, newR.positionId, newR.teamId, id],
+      [newR.name, newR.positionId, newR.teamId, id],
       (error, results, fields) => {
         sendingPut(res, error, results, id, newR)
       }
@@ -134,7 +137,117 @@ app.delete("/players/:id", (req, res) => {
     connection.release();
   });
 });
-//#endregion basketball/players
+//#endregion players
+
+//#region teams
+app.get("/teams", (req, res) => {
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingInfo(res, 0, "server error", [], 403)
+      return;
+    }
+    const sql = `
+    SELECT * FROM teams;
+    `;
+    connection.query(sql, (error, results, fields) => {
+      sendingGet(res, error, results);
+    });
+    connection.release();
+  });
+});
+
+app.get("/teams/:id", (req, res) => {
+  const id = req.params.id;
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingInfo(res, 0, "server error", [], 403)
+      return;
+    }
+    const sql = `
+    SELECT * FROM teams;
+    `;
+    connection.query(sql, [id], (error, results, fields) => {
+      sendingGetById(res, error, results, id)
+    });
+    connection.release();
+  });
+});
+
+app.post("/teams", (req, res) => {
+  const newR = {
+    id: +mySanitizeHtml(req.body.id),
+    teamName: mySanitizeHtml(req.body.teamName)
+  };
+
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingInfo(res, 0, "server error", [], 403);
+      return;
+    }
+    const sql = `
+    INSERT INTO teams
+      (id, teamName)
+      VALUES
+      (?, ?)
+    `;
+    connection.query(
+      sql,
+      [newR.id, newR.teamName],
+      (error, results, fields) => {
+        sendingPost(res, error, results, newR);
+      }
+    );
+    connection.release();
+  });
+});
+
+app.put("/teams/:id", (req, res) => {
+  const id = req.params.id;
+  const newR = {
+    id: +mySanitizeHtml(req.body.id),
+    teamName: mySanitizeHtml(req.body.teamName)
+  };
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingInfo(res, 0, "server error", [], 403);
+      return;
+    }
+
+    const sql = `
+    UPDATE teams SET
+    name = ?, 
+    teamName = ?
+  `;
+    connection.query(
+      sql,
+      [newR.name, newR.teamName, id],
+      (error, results, fields) => {
+        sendingPut(res, error, results, id, newR)
+      }
+    );
+    connection.release();
+  });
+});
+
+app.delete("/teams/:id", (req, res) => {
+  const id = req.params.id;
+  pool.getConnection(function (error, connection) {
+    if (error) {
+      sendingInfo(res, 0, "server error", [], 403);
+      return;
+    }
+
+    const sql = `
+    DELETE from teams
+    WHERE id = ?
+  `;
+    connection.query(sql, [id], (error, results, fields) => {
+      sendingDelete(res, error, results, id)
+    });
+    connection.release();
+  });
+});
+//#endregion teams
 
 function mySanitizeHtml(data) {
   return sanitizeHtml(data, {
