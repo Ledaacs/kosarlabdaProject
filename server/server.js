@@ -20,7 +20,7 @@ const {
 app.use(express.json());
 //#endregion middlewares
 
-//#region basketball
+//#region basketball/players
 app.get("/players", (req, res) => {
   pool.getConnection(function (error, connection) {
     if (error) {
